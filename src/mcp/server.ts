@@ -3,7 +3,6 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { registerCloudTools } from "@hasna/cloud";
 import pkg from "../../package.json";
 
 import { createScenario, getScenario, getScenarioByShortId, listScenarios, updateScenario, deleteScenario, findStaleScenarios } from "../db/scenarios.js";
@@ -32,6 +31,7 @@ import { createTestingWorkflow, getTestingWorkflow, listTestingWorkflows } from 
 import { runTestingWorkflow } from "../lib/workflow-runner.js";
 import { runWorkflowGoalLoop } from "../lib/workflow-agent.js";
 import { redactPersona, redactPersonas } from "../lib/persona-redaction.js";
+import { registerTestersStorageTools } from "./storage-tools.js";
 
 function json(data: unknown): { content: [{ type: "text"; text: string }] } {
   return { content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] };
@@ -1439,7 +1439,7 @@ server.tool(
     goals: z.array(z.string()).optional().describe("Goals the persona is trying to accomplish"),
     projectId: z.string().nullable().optional().describe("Project ID (null = global persona)"),
     authEmail: z.string().optional().describe("Login email for multi-user session pool. Supports @secrets:<key> (vault lookup) or $ENV_VAR references."),
-    authPassword: z.string().optional().describe("Login password. Supports @secrets:<key> (e.g. '@secrets:hasnastudio/alumia/platform/test/admin/password') or $ENV_VAR references."),
+    authPassword: z.string().optional().describe("Login password. Supports @secrets:<key> (e.g. '@secrets:example-app/test/admin/password') or $ENV_VAR references."),
     authLoginPath: z.string().optional().describe("Login page path (default: /login)"),
   },
   async ({ name, role, description, instructions, traits, goals, projectId, authEmail, authPassword, authLoginPath }) => {
@@ -2648,9 +2648,9 @@ server.tool(
   },
 );
 
-// ─── Cloud ────────────────────────────────────────────────────────────────────
+// ─── Storage ──────────────────────────────────────────────────────────────────
 
-registerCloudTools(server, "testers");
+registerTestersStorageTools(server);
 
 return server;
 }

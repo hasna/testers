@@ -1,4 +1,5 @@
 import { getDatabase, uuid, now } from "../db/database.js";
+import { createHmac } from "node:crypto";
 import type { Run, ApiCheck, ApiCheckResult } from "../types/index.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -109,15 +110,7 @@ export interface WebhookPayload {
 }
 
 export function signPayload(body: string, secret: string): string {
-  const encoder = new TextEncoder();
-  const key = encoder.encode(secret);
-  const data = encoder.encode(body);
-  // Simple HMAC-like signature using built-in crypto
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    hash = ((hash << 5) - hash + data[i]! + (key[i % key.length] ?? 0)) | 0;
-  }
-  return `sha256=${Math.abs(hash).toString(16).padStart(16, "0")}`;
+  return `sha256=${createHmac("sha256", secret).update(body).digest("hex")}`;
 }
 
 export function formatDiscordPayload(payload: WebhookPayload): Record<string, unknown> {

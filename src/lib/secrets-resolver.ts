@@ -44,7 +44,7 @@ function lookupFromVault(key: string): string | null {
 /**
  * Resolve a credential value, supporting these patterns:
  *
- * - `@secrets:hasnastudio/alumia/platform/test/member/password`
+ * - `@secrets:example-app/test/member/password`
  *   → looks up the key in the hasna secrets vault
  *
  * - `$ANTHROPIC_API_KEY`

@@ -1,5 +1,4 @@
 import { Database } from "bun:sqlite";
-import { SqliteAdapter } from "@hasna/cloud";
 import { mkdirSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { homedir } from "os";
@@ -18,7 +17,8 @@ function shortUuid(): string {
   return uuid().slice(0, 8);
 }
 
-function resolveDbPath(): string {
+export function getTestersDbPath(path?: string): string {
+  if (path) return path;
   if (process.env["HASNA_TESTERS_DB_PATH"]) return process.env["HASNA_TESTERS_DB_PATH"];
   if (process.env["TESTERS_DB_PATH"]) return process.env["TESTERS_DB_PATH"];
 
@@ -566,13 +566,13 @@ function applyMigrations(database: Database): void {
 export function getDatabase(): Database {
   if (db) return db;
 
-  const dbPath = resolveDbPath();
+  const dbPath = getTestersDbPath();
   const dir = dirname(dbPath);
   if (dbPath !== ":memory:" && !existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
 
-  db = new SqliteAdapter(dbPath) as unknown as Database;
+  db = new Database(dbPath);
   db.exec("PRAGMA journal_mode = WAL");
   db.exec("PRAGMA foreign_keys = ON");
   db.exec("PRAGMA busy_timeout = 5000");

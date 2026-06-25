@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
+import { registerEventsCommands } from "@hasna/events/commander";
 import chalk from "chalk";
 import pkg from "../../package.json";
 import { render, Box, Text, useInput, useApp } from "ink";
@@ -53,6 +54,7 @@ import { getTestersDir } from "../lib/paths.js";
 import { listSessions, getSession, deleteSession, countSessions, searchSessions } from "../db/sessions.js";
 import { discoverRepo, clearDiscoveryCache, getDiscoveryCacheInfo } from "../lib/repo-discovery.js";
 import { runRepoTests, runPrep } from "../lib/repo-executor.js";
+import { registerStorageCommands } from "./storage.js";
 
 // ─── Interactive Add Prompt (Ink) ────────────────────────────────────────────
 
@@ -402,6 +404,9 @@ program
   .description("AI-powered browser testing CLI")
   .option("-q, --quiet", "Suppress all output", false)
   .option("--no-color", "Disable color output");
+
+registerStorageCommands(program);
+registerEventsCommands(program, { source: "testers" });
 
 program
   .command("prod-debug <target>")

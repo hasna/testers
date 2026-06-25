@@ -182,15 +182,17 @@ Default port **8840** (`--port` / `MCP_HTTP_PORT`). Endpoints: `GET /health`, `P
 testers-serve
 ```
 
-## Cloud Sync
+## Storage Sync
 
-This package supports cloud sync via `@hasna/cloud`:
+This package supports package-native local/remote storage sync:
 
 ```bash
-cloud setup
-cloud sync push --service testers
-cloud sync pull --service testers
+testers storage status
+testers storage push
+testers storage pull
 ```
+
+Set `HASNA_TESTERS_DATABASE_URL` for a direct PostgreSQL connection, or configure `~/.hasna/testers/storage/config.json` for the testers RDS host settings.
 
 ## Data Directory
 
